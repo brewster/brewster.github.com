@@ -254,10 +254,102 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
 
                 <!-- SMGridView -->
 
-                <section data-markdown>
-                # SMGridView #
-                ### It's butter smooth. ###
-                </section>
+<section data-markdown>
+					# SMGridView #
+					
+					### an iOS4+ Grid ###
+					
+				</section>
+				
+				<section data-markdown>
+					# Why SMGridView? #
+					### How do I create a grid view in ios? ###
+					* UITableView?
+					* Custom?
+					* iOS 6 UICollectionView?
+				</section>
+				
+				<section data-markdown>
+					# SMGridView Features #
+					
+					* Horizontal or vertical scroll
+					* Not restricted to a specific view (UITableViewCell...)
+					* Support for sections (sticky or not sticky)
+					* Insert and delete with animation
+					* Drag and Drop to sort
+					* Reuse views
+					* Pagination
+					* Empty view
+					* Custom Loader View for infinity scroll
+				</section>
+				
+				<section data-markdown>
+					## How to use it? ##
+					
+					* SMGridViewDataSource and SMGridViewDelegate
+					<pre><code class="objective-c">@protocol SMGridViewDataSource <NSObject>
+						
+					- (NSInteger)smGridView:(SMGridView *)gridView 
+					 numberOfItemsInSection:(NSInteger)section;
+
+					- (CGSize)smGridView:(SMGridView *)gridView 
+					    sizeForIndexPath:(NSIndexPath *)indexPath;
+
+					- (UIView *)smGridView:(SMGridView *)gridView 
+					      viewForIndexPath:(NSIndexPath *)indexPath;
+						
+						@optional
+						...
+					</code></pre>
+				</section>
+				
+				<section data-markdown>
+					## How to use it? ##
+					* reloadData just like UITableView
+					<pre><code class="objective-c">- (void)reloadData;
+					- (void)reloadSection:(NSInteger)section;
+					- (void)reloadDataWithPage:(NSInteger)page;
+					</code></pre>
+					* Reuse views
+					<pre><code class="objective-c">- (UIView *)smGridView:(SMGridView *)gridView 
+						viewForIndexPath:(NSIndexPath *)indexPath {
+						    // Check if we can reuse
+						    UILabel *label = [gridView dequeReusableView];
+						    if (!label) {
+						        label = [[[UILabel alloc] 
+								         initWithFrame:CGRectMake(0, 0, 100, 100)] autorelease]
+						    }
+						    label.text = [NSString stringWithFormat:
+									      @"%d", indexPath.row];
+						    return label;
+						}
+					</pre></code>
+				</section>
+				
+				<section data-markdown>
+					## Performance hints ##
+					* If your views are all the same size
+					<pre><code class="objective-c">- (BOOL)smGridViewSameSize:(SMGridView *)gridView;
+					</pre></code>
+					* Infinite scroll 
+					<pre><code class="objective-c">- (void)reloadDataOnlyNew;
+- (void)reloadSectionOnlyNew:(NSInteger)section;
+					</pre></code>
+				</section>
+				
+				<section data-markdown>
+					## Demo ##
+					* Example project
+					* Good documentation (http://brewster.github.com/SMGridView)
+				</section>
+				
+				<section data-markdown>
+					## Next steps ##
+					* ARC ?
+					* Section Headers and Pagination
+					* Other configurations
+					* Migration to UICollectionView
+				</section>
 
                 <!-- Auger -->
 
