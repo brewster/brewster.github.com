@@ -102,12 +102,155 @@ end</code></pre>
 
                 </section>
 
+                <section>
+                <h1>Concurrent modification</h1>
+
+                <p>ES has built-in support for optimistic locking.<br/>
+                Elastictastic does concurrency-safe updates:</p>
+
+                <pre><code class="ruby">Post.update(params[:id]) do |post|
+  post.comments &lt;&lt; Comment.new(params[:comment])
+  # If the optimistic lock fails on the first try,
+  # Elastictastic will reload the document from
+  # storage and re-run the block.
+end</code></pre>
+                </section>
+
                 <!-- Cequel -->
 
                 <section>
                     <h1>Cequel</h1>
                     <h3>A Ruby object-row mapper for Cassandra/CQL</h3>
                 </section>
+
+                <section data-markdown>
+                # Why Cassandra? #
+
+                * Big Data
+                * Fast writes
+                * Transition from RDBMS
+                * "Wide rows"
+                </section>
+
+                <section data-markdown>
+                # Why CQL? #
+
+                * Actively developed and improved
+                * Useful abstractions on top of basic Thrift interface
+                * Familiar to developers coming from RDBMS world
+                </section>
+
+                <section data-markdown>
+                # CQL drawbacks #
+
+                * CQL looks almost exactly like SQL
+                * But Cassandra doesn't work almost exactly like an RDBMS
+                </section>
+
+                <section>
+                <h1>Cequel query builder</h1>
+
+                <pre><code lang="ruby">keyspace = Cequel.connect(
+  host: '127.0.0.1:9160',
+  keyspace: 'myapp_development'
+)
+
+keyspace[:posts].
+  select(:title).
+  consistency(:quorum).
+  where(blog_id: 1).
+  limit(20)</code></pre>
+                </section>
+
+                <section>
+                <h1>Range slices</h1>
+
+                <p>Get the last 20 posts from a wide row</p>
+                <pre><code lang="ruby">keyspace[:blog_posts].
+  select(last: 20).
+  where(blog_id: 1)</code></pre>
+
+                <p>Get posts whose column headers fall within a range</p> 
+                <pre><code>keyspace[:blog_posts].
+  select((2.weeks.ago)..(1.week.ago)).
+  where(blog_id: 1)</code></pre>
+
+                <p>In these cases, column values may be post IDs, or blobs
+                containing denormalized post data in JSON etc.</p>
+                </section>
+
+                <section>
+                <h1>Skinny models</h1>
+                <p>A "skinny row" has predefined column names with heterogeneous
+                column types, like in a relational database</p>
+                <pre><code class="ruby">class Post
+  include Cequel::Model
+
+  key :id, :uuid
+  column :title, :string
+
+  private
+  def generate_id
+    CassandraCQL::UUID.new
+  end
+end</code></pre>
+
+                <p>You can do all the normal ActiveModel stuff too.</p>
+
+                </section>
+
+                <section>
+                <h1>Working with models</h1>
+                <p>Just close your eyes and pretend it's ActiveRecord</p>
+                <p class="fragment">...once you've read the README.</p>
+                </section>
+
+
+                <section>
+                <h1>Dictionaries</h1>
+
+                <pre><code>class BlogPosts &lt; Cequel::Model::Dictionary
+  key :blog_id, :uuid
+  maps :uuid =&gt; :text
+
+  private
+
+  def serialize_value(data)
+    data.to_json
+  end
+
+  def deserialize_value(column, blob)
+    JSON.parse(blob)
+  end
+end</code></pre>
+
+                </section>
+
+                <section>
+                <h1>Working with dictionaries</h1>
+                <pre><code class="ruby">posts = BlogPosts[blog_id]
+posts[uuid] #=&gt; {'title' =&gt; 'Big Data'}
+posts[uuid] = {'title' =&gt; 'Biggest Data'}
+posts.save # Now we've updated the value in that column
+
+posts.load # Load the whole row into memory.
+
+posts.keys
+posts.values
+posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
+
+                </section>
+
+                <section data-markdown>
+                # Roadmap #
+
+                * Model relationships in wide rows
+                * Schema statements/migrations
+                * Type enforcement
+                * CQL3?
+                </section>
+
+
 
                 <!-- SMGridView -->
 
