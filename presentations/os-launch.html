@@ -359,6 +359,70 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
                 ### Test-driven ops ###
                 </section>
 
+                <section data-markdown>
+                  # Why Auger? #
+
+                  * Ops should test their stuff
+                  * Writing tests should be quick and easy
+                  * Test at the service level
+                </section>
+
+                <section data-markdown>
+                  # What is Auger? #
+
+                  * Ruby DSL for testing remote applications
+                  * Command-line client for running tests
+                  * Plugin framework for wrapping gems
+                </section>
+                
+                <section data-markdown>
+                  # Why Ruby? #
+
+                  * Expressive DSLs
+                  * Flexibility
+                  * Leverage existing gems as plugins
+                </section>
+
+                <section data-markdown>
+                  # A Test #
+
+                  <pre><code class="ruby">project "Ganglia Web Servers" do
+  server "ganglia-r[01-03]"
+
+  http do
+    get '/ganglia/' do
+
+      test 'status code is 200' do |response|
+        response.code == '200'
+      end
+
+      test "gmetad Version" do |response|
+        response.body.match /gmetad\)<\/i> version\s+([\d\.]+)/
+      end
+
+    end
+  end
+end
+                  </code></pre>
+                </section>
+
+                <section data-markdown>
+                  # The Output #
+                  <pre>$ aug ./http.rb
+[ganglia-r01]
+  status code is 200  ✓
+      gmetad Version  3.1.7
+[ganglia-r02]
+  status code is 200  ✓
+      gmetad Version  3.1.7
+[ganglia-r03]
+  status code is 200  ✓
+      gmetad Version  3.1.7
+                  </pre>
+                </section>
+                <section data-markdown>
+                </section>
+                  
                 <!-- Front-end Loader -->
                 <section data-markdown>
                 # Front-end Loader #
