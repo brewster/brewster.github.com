@@ -359,11 +359,89 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
                 ### Test-driven ops ###
                 </section>
 
-                <!-- Front-end Loader -->
-                <section data-markdown>
-                # Front-end Loader #
-                ### How much can you take? ###
-                </section>
+          <!-- Front-end Loader -->
+          <section data-markdown>
+          # Front-end Loader #
+          ### How much can you take? ###
+          <img src="images/frontEndLoader.jpg"/>
+          </section>
+
+          <section data-markdown>
+          # Load Testing #
+          </section>
+
+          <section data-markdown>
+          # Tools #
+          * The wikipedia page lists 23 tools
+          * Many of which cost money
+          * And/or are monolithic testing tools
+          * None of which have a simple Ruby API
+          </section>
+
+          <section data-markdown>
+          ## JMeter ##
+          * Is a complete nightmare to use if you're trying to do any type of dynamic behavior
+          <center><img src="images/jmeter.png"/></center>
+          </section>
+
+          <section data-markdown>
+          # Front End Loader #
+          ### Ruby library for declaring load tests and viewing their results ###
+          </section>
+
+          <section data-markdown>
+          Declaring the experiment
+          <pre><code class="ruby">require 'front_end_loader'
+
+experiment = FrontEndLoader::Experiment.new.tap do |e|
+  e.user_count = 20
+  e.loop_count = 5
+  e.domain = 'https://www.google.com'
+  e.basic_auth('unreal_login', 'unreal_password')
+  e.default_parameters = { 'unnecessary' => 'true' }
+  e.debug = '/tmp/front_end_loader.txt'
+
+  e.requests do |r|
+    ...
+  end
+end
+
+experiment.run
+          </pre></code>
+          </section>
+
+          <section data-markdown>
+            Scripting the requests
+            <pre><code class="ruby">e.requests do |r|
+  r.get('test_search', '/search', :q => 'test') do |response|
+    items = response.body.
+      split(/\s/).
+      reject { |i| i.length < 3 || i.length > 10 }
+
+    word = items[rand(items.count-1)]
+  end
+
+  e.write_debug(word)
+
+  r.get('random_word_search', '/search', :q => word)
+
+  r.get('privacy_policy', '/intl/en/policies')
+  # r.post(...), r.put(...), r.delete(...)
+end
+            </pre></code>
+          </section>
+
+          <section data-markdown>
+          # Demo! #
+          </section>
+
+          <section data-markdown>
+          # Next Steps #
+          * Other display types
+          * Distribution
+          * Storing output and comparing data across runs
+          * Charts and graphs
+          </section>
 
                 <!-- Imagine -->
                 <section data-markdown>
