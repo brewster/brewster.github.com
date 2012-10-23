@@ -359,6 +359,7 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
                 <section data-markdown>
                 # Auger #
                 ### Test-driven ops ###
+
                 </section>
 
                 <section data-markdown>
@@ -386,6 +387,12 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
                 </section>
 
                 <section data-markdown>
+                  # Installation #
+
+                  <code>gem install auger</code>
+                </section>
+
+                <section data-markdown>
                   # A Test #
 
                   <pre><code class="ruby">project "Ganglia Web Servers" do
@@ -398,7 +405,7 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
         response.code == '200'
       end
 
-      test "gmetad Version" do |response|
+      test 'gmetad Version' do |response|
         response.body.match /gmetad\)<\/i> version\s+([\d\.]+)/
       end
 
@@ -425,27 +432,29 @@ module Auger
       @connections << Auger::Redis.load(port, &block)
     end
   end
-...
+
+end
                   </code></pre>
                 </section>
 
                 <section data-markdown>
                   # Plugin: Connection #
-                  <pre><code class="ruby">class Redis < Auger::Connection
-  def open(host, options)
-    ::Redis.new options.merge({
-      :host => host,
-      :port => options[:port],
-      :thread_safe => true
-    })
-  end
+                  <pre><code class="ruby">module Auger
+  class Redis < Auger::Connection
+    def open(host, options)
+      ::Redis.new options.merge({
+        :host => host,
+        :port => options[:port],
+      })
+    end
 
-  def close(redis)
-    redis.quit
-  end
+    def close(redis)
+      redis.quit
+    end
 
-  def info(&block)
-    @requests << Auger::RedisInfo.load(nil, &block)
+    def info(&block)
+      @requests << Auger::RedisInfo.load(nil, &block)
+    end
   end
 end
                  </code></pre>
@@ -454,14 +463,16 @@ end
 
                 <section data-markdown>
                   # Plugin: Request #
-                  <pre><code class="ruby">class Redis < Auger::Connection
+                  <pre><code class="ruby">module Auger
+  class Redis < Auger::Connection
 
-  class RedisInfo < Auger::Request
-    def run(redis, arg)
-      redis.info
+    class RedisInfo < Auger::Request
+      def run(redis, arg)
+        redis.info
+      end
     end
-  end
 
+  end
 end
                   </code></pre>
                 </section>
