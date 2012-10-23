@@ -420,9 +420,90 @@ end
       gmetad Version  3.1.7
                   </pre>
                 </section>
-                <section data-markdown>
-                </section>
                   
+                <section data-markdown>
+                  # Plugin: Redis #
+                  <pre><code class="ruby">require 'redis'
+
+module Auger
+
+  class Project
+    def redis(port = 6379, &block)
+      @connections << Auger::Redis.load(port, &block)
+    end
+  end
+...
+                  </code></pre>
+                </section>
+
+                <section data-markdown>
+                  # Plugin: Connection #
+                  <pre><code class="ruby">class Redis < Auger::Connection
+  def open(host, options)
+    ::Redis.new options.merge({
+      :host => host,
+      :port => options[:port],
+      :thread_safe => true
+    })
+  end
+
+  def close(redis)
+    redis.quit
+  end
+
+  def info(&block)
+    @requests << Auger::RedisInfo.load(nil, &block)
+  end
+end
+                 </code></pre>
+                </section>
+
+
+                <section data-markdown>
+                  # Plugin: Request #
+                  <pre><code class="ruby">class Redis < Auger::Connection
+
+  class RedisInfo < Auger::Request
+    def run(redis, arg)
+      redis.info
+    end
+  end
+
+end
+                  </code></pre>
+                </section>
+
+                <section data-markdown>
+                  # Plugin: Usage #
+                  <pre><code class="ruby">project "Redis" do
+  server "staging-redis-r01"
+
+  redis 6379 do
+
+    info do
+      test "redis version" do |info|
+        info['redis_version']
+      end
+        
+      test "server role" do |info|
+        info['role']
+      end
+    end
+
+  end
+end
+                  </code></pre>
+                </section>
+
+                <section data-markdown>
+                  # Plugin: Output #
+                  <pre><code class="shell">$ aug ./redis.rb
+[staging-redis-r01]
+  redis version  2.4.14               
+    server role  master
+                  </code></pre>
+                </section>
+
                 <!-- Front-end Loader -->
                 <section data-markdown>
                 # Front-end Loader #
