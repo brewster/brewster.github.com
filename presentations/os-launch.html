@@ -115,14 +115,12 @@
 		<section data-markdown data-state="alert">
 			# Thinly&nbsp;Veiled Hiring&nbsp;Pitch #
 			randy@brewster.com
-
-			@randyme
 		</section>
 
 		<section>
 			<h1>Project Talks</h1>
 			<ul>
-				<li class="fragment">ElasticTastic</li>
+				<li class="fragment">Elastictastic</li>
 				<li class="fragment">Cequel</li>
 				<li class="fragment">SMGridView</li>
 				<li class="fragment">Auger</li>
@@ -353,10 +351,10 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
 				
 				<section data-markdown>
 					# Why SMGridView? #
-					### How do I create a grid view in ios? ###
-					* Custom?
-					* UITableView?
-					* iOS 6 UICollectionView?
+					* Very fast
+					* Optimized for infinite scrolling
+					* Support for reordering, adding, removing items
+					* Fragmented existing solutions: custom grids, UITableView, and iOS6's UICollectionView
 				</section>
 				
 				<section data-markdown>
@@ -369,7 +367,7 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
 						<li class="fragment">Drag and Drop to sort</li>
 						<li class="fragment">Reuse views</li>
 						<li class="fragment">Pagination</li>
-						<li class="fragment">Custom Loader View for infinity scroll (48 items)</li>
+						<li class="fragment">Custom Loader View for infinite scroll</li>
 						<li class="fragment">Empty view</li>
 						<li class="fragment">Use it without scroll</li>
 					</ul>
@@ -434,7 +432,7 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
 					* ARC ?
 					* Inifinite loading in individual sections
 					* Section Headers and Pagination
-					* Subviews: SMCarousel
+					* Subclasses: SMCarousel
 					* Migration to UICollectionView
 				</section>
 				
@@ -603,12 +601,6 @@ end
                   * Triage
                 </section>
 
-                <!-- Front-end Loader -->
-                <section data-markdown>
-                # Front-end Loader #
-                ### How much can you take? ###
-                </section>
-
           <!-- Front-end Loader -->
           <section data-markdown>
           # Front-end Loader #
@@ -747,6 +739,11 @@ end
                 <section data-markdown>
                   ## Demo
                 </section>
+
+		<section data-markdown>
+			# Q&A #
+			Contact: randy@brewster.com
+		</section>
 			</div>
 
 		</div>
@@ -776,10 +773,19 @@ end
 					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
 				]
 			});
+
+			Reveal.addEventListener('slidechanged', function( event ) {
+				var logo = document.getElementById('bottom-logo');
+				if (event.indexh > 0) {
+					logo.style.display = 'block';
+				} else {
+					logo.style.display = 'none';
+				}
+			} );
 		</script>
 
-		<div class="logo" style="position: absolute; bottom: 10px; left: 10px;">
-		<img src="https://dl.dropbox.com/u/57592475/light%20-%20small.jpg" width="75" height="75">
+		<div class="logo" id="bottom-logo" style="display:none;position: absolute; bottom: 10px; left: 10px;">
+		<img src="https://dl.dropbox.com/u/57592475/dark-small.png" width="75" height="75">
 		</div>
 	</body>
 </html>
