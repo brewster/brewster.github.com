@@ -557,6 +557,35 @@ end
 
                   <img src="images/auger_http.png" style="border-width: 0px;"/>
                 </section>
+
+                <section data-markdown>
+                  # More interesting tests #
+
+                  <pre><code class="ruby">require 'json'
+
+project "Elasticsearch - Staging" do
+  server "staging-es-r[01-02]"
+  
+  http 9200 do
+    timeout 3
+
+    get "/" do
+      before_tests do |response|
+        JSON.parse(response.body)
+      end
+
+      test "version" do |json|
+        status = json["version"]["number"]
+      end
+                  </code></pre>
+                </section>
+
+                <section data-markdown>
+                  # More interesting output #
+
+                  <img src="images/auger_es.png" style="border-width: 0px;"/>
+                </section>
+
                   
                 <section data-markdown>
                   # Plugin: Redis #
