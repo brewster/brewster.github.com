@@ -370,6 +370,7 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
 						<li class="fragment">Custom Loader View for infinite scroll</li>
 						<li class="fragment">Empty view</li>
 						<li class="fragment">Use it without scroll</li>
+						<li class="fragment">Same size views performance boost</li>
 					</ul>
 				</section>
 				
@@ -413,17 +414,6 @@ posts.slice(:last =&gt; 20) # A Hash of the last 20 columns</code></pre>
 									      @"%d", indexPath.row];
 						    return label;
 						}
-					</pre></code>
-				</section>
-				
-				<section data-markdown>
-					## Performance hints ##
-					* If your views are all the same size
-					<pre><code class="objective-c">- (BOOL)smGridViewSameSize:(SMGridView *)gridView;
-					</pre></code>
-					* Infinite scroll 
-					<pre><code class="objective-c">- (void)reloadDataOnlyNew;
-- (void)reloadSectionOnlyNew:(NSInteger)section;
 					</pre></code>
 				</section>
 				
