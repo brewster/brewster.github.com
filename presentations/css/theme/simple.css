@@ -130,3 +130,24 @@ body {
   -o-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
   transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
 }
+
+/**** CUSTOMIZATIONS ****/
+
+.reveal table {
+    margin: 1em 0;
+    border-collapse: collapse;
+}
+
+.reveal table tr th {
+    font-weight: bold;
+    font-size: 0.6em;
+}
+
+.reveal table tr td {
+    font-size: 0.5em;
+}
+
+.reveal table tr td, .reveal table tr th {
+    padding: 0 0.5em;
+    border: 1px solid darkgray;
+}

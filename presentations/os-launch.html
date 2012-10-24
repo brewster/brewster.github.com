@@ -163,7 +163,7 @@
 
   field :blog_id, type: 'integer'
   field :title, type: 'text', index: 'analyzed' do
-    field :sort, type: 'text', analyzer: 'lowerCaseKeyword'
+    field :sort, type: 'text', index: 'not_analyzed'
   end
   field :body
   field :published_at, type: 'date'
@@ -228,56 +228,108 @@ end</code></pre>
                 * Familiar to developers coming from RDBMS world
                 </section>
 
-                <section data-markdown>
-                # CQL drawbacks #
+                <section>
+                <h1>CQL drawbacks</h1>
 
-                * CQL looks almost exactly like SQL
-                * But Cassandra doesn't work almost exactly like an RDBMS
+                <p>CQL looks almost exactly like SQL<span class="fragment">...
+                    but Cassandra doesn't work almost exactly like an RDBMS</span></p>
+                </section>
+
+                <section>
+                <h1>Skinny rows</h1>
+                <table>
+                    <tr>
+                        <th>id</th>
+                        <th>blog_permalink</th>
+                        <th>title</th>
+                        <th>body</th>
+                    </tr>
+                    <tr>
+                        <td>45c5cfe4-1e1b-11e2-9d5c...</td>
+                        <td>outoftime</td>
+                        <td>Big Data</td>
+                        <td>In the whole history of mankind...</td>
+                    </tr>
+                    <tr>
+                        <td>591f6280-1e1b-11e2-919f...</td>
+                        <td>outoftime</td>
+                        <td>Bozo the Clown</td>
+                        <td>I have known many a clown, but...</td>
+                    </tr>
+                </table>
+
+                <ul>
+                    <li class="fragment">Predefined column names</li>
+                    <li class="fragment">Heterogeneous types</li>
+                    <li class="fragment">No sorting</li>
+                    <li class="fragment">No meaningful ranges</li>
+                </ul>
+                </section>
+
+                <section>
+                <h1>Wide rows!</h1>
+                <table>
+                    <tr>
+                        <th>blog_permalink</th>
+                        <th>45c5cfe4-1e1b-11e2-9d5c...</th>
+                        <th>591f6280-1e1b-11e2-919f...</th>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">outoftime</td>
+                        <td>{"title":"Big Data","body":"In the whole history of mankind..."}</td>
+                        <td>{"title":"Bozo the Clown","body":"I have known many a clown, but..."}</td>
+                    </tr>
+                </table>
+                <ul>
+                    <li class="fragment">Dynamically defined column names</li>
+                    <li class="fragment">Same type for all values</li>
+                    <li class="fragment">Up to ~2 billion columns per row</li>
+                    <li class="fragment">Column headers are in lexical order</li>
+                    <li class="fragment">Get "slices" of row in column order</li>
+                </ul>
                 </section>
 
                 <section>
                 <h1>Cequel query builder</h1>
 
-                <pre><code lang="ruby">keyspace = Cequel.connect(
-  host: '127.0.0.1:9160',
-  keyspace: 'myapp_development'
-)
+                <section>
+                <p>Get 20 skinny posts using the blog_permalink index</p>
 
-keyspace[:posts].
+                <pre><code lang="ruby">db[:posts].
   select(:title).
   consistency(:quorum).
-  where(blog_id: 1).
+  where(blog_permalink: 'outoftime').
   limit(20)</code></pre>
                 </section>
 
                 <section>
-                <h1>Range slices</h1>
-
                 <p>Get the last 20 posts from a wide row</p>
-                <pre><code lang="ruby">keyspace[:blog_posts].
+                <pre><code lang="ruby">db[:blog_posts].
   select(last: 20).
-  where(blog_id: 1)</code></pre>
+  where(blog_permalink: 'outoftime')</code></pre>
+                </section>
 
+                <section>
                 <p>Get posts whose column headers fall within a range</p> 
-                <pre><code>keyspace[:blog_posts].
+                <pre><code>db[:blog_posts].
   select((2.weeks.ago)..(1.week.ago)).
-  where(blog_id: 1)</code></pre>
+  where(blog_permalink: 'outoftime')</code></pre>
+                </section>
 
-                <p>In these cases, column values may be post IDs, or blobs
-                containing denormalized post data in JSON etc.</p>
                 </section>
 
                 <section>
                 <h1>Skinny models</h1>
-                <p>A "skinny row" has predefined column names with heterogeneous
-                column types, like in a relational database</p>
                 <pre><code class="ruby">class Post
   include Cequel::Model
 
   key :id, :uuid
+  column :blog_permalink, :string
   column :title, :string
+  column :body, :string
 
   private
+
   def generate_id
     CassandraCQL::UUID.new
   end
@@ -298,7 +350,7 @@ end</code></pre>
                 <h1>Dictionaries</h1>
 
                 <pre><code>class BlogPosts &lt; Cequel::Model::Dictionary
-  key :blog_id, :uuid
+  key :blog_permalink, :text
   maps :uuid =&gt; :text
 
   private
@@ -316,7 +368,7 @@ end</code></pre>
 
                 <section>
                 <h1>Working with dictionaries</h1>
-                <pre><code class="ruby">posts = BlogPosts[blog_id]
+                <pre><code class="ruby">posts = BlogPosts[permalink]
 posts[uuid] #=&gt; {'title' =&gt; 'Big Data'}
 posts[uuid] = {'title' =&gt; 'Biggest Data'}
 posts.save # Now we've updated the value in that column
