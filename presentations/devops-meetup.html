@@ -173,7 +173,9 @@ end</pre></code>
 
         <section data-markdown>
             # Auger #
-            ### Test-driven ops ###
+            ### Drill your apps ###
+
+            <img src="images/auger.jpg" width="600px"/>
 
         </section>
 
@@ -258,7 +260,7 @@ project "Elasticsearch - Staging" do
       end
 
       test "version" do |json|
-        status = json["version"]["number"]
+        json["version"]["number"]
       end
 ...
              </code></pre>
