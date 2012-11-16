@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Interactions - JonCon 16 November 2012</title>
+
+		<meta name="description" content="Brewster Interactions">
+		<meta name="author" content="Brewster, Inc.">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/simple.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+
+                <section>
+                <h1>Interactions</h1>
+                <h3>JonCon 16 November 2012</h3>
+                </section>
+
+                <section>
+                <p>What can we learn about your relationships from the way you
+                interact with your contacts online?</p>
+                </section>
+
+                <section>
+                <h1>The Data</h1>
+                <section></section>
+                <section>
+                <img src="images/interactions-foursquare.png" alt="Foursquare" />
+                </section>
+                <section>
+                <img src="images/interactions-twitter.png" alt="Twitter" />
+                </section>
+                <section>
+                <img src="images/interactions-facebook.png" alt="Twitter" />
+                </section>
+                <section>
+                <img src="images/interactions-gmail.png" alt="Twitter" />
+                </section>
+                </section>
+
+                <section>
+                <h1>Aggregation</h1>
+                <pre><code class="erlang">{Timestamp, Uid, Type, Weight} =
+    {1353093199, &lt;&lt;"6128"&gt;&gt;, colocation, 1.0}</code></pre>
+
+                <br />
+                <h3>Types</h3>
+                <ul>
+                    <li>Colocation</li>
+                    <li>Correspondence</li>
+                    <li>Conversation</li>
+                </ul>
+                </section>
+
+                <section>
+                <h1>Interaction Score</h1>
+                <section>
+                <img src="images/interactions-formulas.png" />
+                </section>
+                <section>
+                <pre><code>&gt; InteractionAggregator.new(User['mat']).summarize
+name                coloc  corrin  corrout  corrbal  conv  score
+Randy Meech            18   171.2    182.6    353.6     0  779.2
+Pamela Brown           60    49.4     45.9     95.3     6  436.5
+Steven Greenwood        3   114.4     75.6    186.0     0  384.0
+Teresa Brown            0    64.6     56.5    120.9     0  241.7
+Smita Saran             1    47.8     38.4     85.7     0  175.5
+Grant Heffernan         2    34.8     44.4     78.7     0  165.3
+Matt Morgan            22     7.9     17.1     23.2     1  135.5
+Katie Conneally        28     2.6      3.8      6.3     2  126.5
+Andrew Sandoval        20     8.7      8.7     17.4     1  115.8
+Aubrey Holland          4    18.4     28.1     45.5     1  108.0
+Mike Cunningham        10    11.1     13.3     24.3     0   88.6
+Desmond Bowe            0    17.0     23.0     39.5     1   80.1
+Nathan Saperia          3    16.9     14.7     31.4     0   74.9
+Miguel Cohnen           4    12.7     16.7     29.2     0   74.3
+John Crepezzi           8    11.9      7.5     18.9     0   69.8</code></pre>
+                </section>
+                </section>
+
+                <section>
+                <h1>Trends</h1>
+                <section>
+                <pre><code>&gt; FancyTrendingCalculator.new(User['mat']).report
+Trending
+name                           coef pval
+Chris Barth                    0.25 0.01
+Kerry Kimbrough                0.19 0.08
+David Hoftiezer                0.19 0.09
+
+Losing touch
+name                           coef pval
+Grant Heffernan               -0.22 0.03</code></pre>
+                </section>
+                <section>
+                <img src="images/trending.png" alt="Trending" />
+                </section>
+                <section>
+                <img src="images/losing.png" alt="Losing Touch" />
+                </section>
+                <section>
+                <img src="images/pam.png" alt="No Trend" />
+                </section>
+                </section>
+
+                <section>
+                <h1>Recurrence</h1>
+                <section><p>How often do you interact?<br/>Has it been an unusually long time?</p></section>
+                <section><pre><code>&gt; RecurrenceCalculator.new(User['mat']).
+    summarize('correspondence_out')
+name                            mean stddev days    z
+Nathan Saperia                   8.7   10.1   20 1.99
+Katie Conneally                  7.0    9.1   15 1.66
+Andrew Sandoval                  6.1    9.8   15 1.52
+Miguel Cohnen                    5.7   13.2   20 1.52
+Craig Breslawski                 7.2   10.0   14 1.39
+John Crepezzi                    8.6   31.9   32 1.00</code></pre>
+                </section>
+                <section><pre><code>&gt; RecurrenceCalculator.new(User['mat']).summarize('colocation')
+name                            mean stddev days    z
+Eric Lindley                    19.2   38.5   88 2.29
+Heather Monley                  16.2   41.9   87 2.07
+Sydney S. Kim                   24.0   55.1   88 1.60
+Annie Naftel                   207.3  351.5  467 1.33
+Alex Middleton                 155.2  390.9  467 1.19</code></pre>
+                </section>
+                </section>
+                <section><h1>Thank you for interacting with me.</h1></section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/highlight.js', async: true, callback: function() { window.hljs.initHighlightingOnLoad(); } },
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'lib/js/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'lib/js/data-markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+			Reveal.addEventListener('slidechanged', function( event ) {
+				var logo = document.getElementById('bottom-logo');
+				if (event.indexh > 0) {
+					logo.style.display = 'block';
+				} else {
+					logo.style.display = 'none';
+				}
+			} );
+		</script>
+
+		<div class="logo" id="bottom-logo" style="display:none;position: absolute; bottom: 10px; left: 10px;">
+		<img src="https://dl.dropbox.com/u/57592475/dark-small.png" width="75" height="75">
+		</div>
+	</body>
+</html>
